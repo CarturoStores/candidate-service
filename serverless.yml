@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: candidate-service # NOTE: update this with your service name
+service: geoservice-lambda # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -23,8 +23,8 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    CANDIDATE_TABLE: ${self:service}-${opt:stage, self:provider.stage}
-    CANDIDATE_EMAIL_TABLE: "candidate-email-${opt:stage, self:provider.stage}"
+    ADDRESS_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    API_KEY: api_key
 
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
@@ -60,27 +60,28 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  candidateSubmission:
-    handler: api/candidate.submit
+  addressSubmission:
+    handler: api/address.submit
     memorySize: 128
-    description: Submit candidate information and starts interview process.
+    description: Submit address geocoding info and starts interview process.
     events:
       - http: 
-          path: candidates
+          path: address
           method: post
-  listCandidates:
-    handler: api/candidate.list
+  listAddress:
+    handler: api/address.list
     memorySize: 128
-    description: List all candidates
+    description: List all address
     events:
       - http: 
-          path: candidates
+          path: address
           method: get 
-  candidateDetails:
-    handler: api/candidate.get
+  addressDetails:
+    handler: api/address.get
+    description: Get address detail
     events:
       - http:
-          path: candidates/{id}
+          path: address/{id}
           method: get
 
 #    The following are a few example events you can configure
@@ -129,7 +130,7 @@ functions:
 #       Value: "Some output value"
 resources:
   Resources:
-    CandidatesDynamoDbTable:
+    AddressDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
@@ -146,4 +147,4 @@ resources:
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
-        TableName: ${self:provider.environment.CANDIDATE_TABLE}
+        TableName: ${self:provider.environment.ADDRESS_TABLE}
