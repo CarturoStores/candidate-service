@@ -1,0 +1,4 @@
+node_modules/
+.serverless/cloudformation-template-create-stack.json
+package-lock.json
+.babelrc
